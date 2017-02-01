@@ -31,8 +31,9 @@ decimalChar =
 
 decimalOfLength :: Num a => Int -> Parser a
 decimalOfLength length =
-  fmap (foldl' (\a b -> a * 10 + b) 0) $
-  replicateM length (fmap fromIntegral decimalChar)
+  foldl' (\a b -> a * 10 + b) 0 <$>
+  replicateM length (fmap fromIntegral decimalChar) <|>
+  fail "Invalid decimal length"
 
 shortMonth :: Parser Int
 shortMonth =
@@ -69,6 +70,21 @@ picoWithBasisOfLength basisLength =
               head : tail -> padListFromRight padding (head : accumulator) (pred length) tail
               _ -> reverse accumulator ++ replicate length padding
 
+{-# INLINE hour #-}
+hour :: Parser Int
+hour =
+  validated B.hour (decimalOfLength 2) <?> "hour"
+
+{-# INLINE minute #-}
+minute :: Parser Int
+minute =
+  validated B.minute (decimalOfLength 2) <?> "minute"
+
+{-# INLINE second #-}
+second :: Parser Pico
+second =
+  validated B.second (picoWithBasisOfLength 2) <?> "second"
+
 {-|
 >>> parseOnly timeOfDayInISO8601 "05:03:58"
 Right 05:03:58
@@ -78,6 +94,22 @@ Right 05:03:58.02
 
 >>> parseOnly timeOfDayInISO8601 "05:03:58.020"
 Right 05:03:58.02
+
+Checks the elements to be within a proper range:
+
+>>> parseOnly timeOfDayInISO8601 "24:00:00"
+Left "timeOfDayInISO8601 > hour: Failed reading: Validator \"hour\" failed on the following input: 24"
+
+>>> parseOnly timeOfDayInISO8601 "00:00:60"
+Left "timeOfDayInISO8601 > second: Failed reading: Validator \"second\" failed on the following input: 60.000000000000"
+
+Checks the elements to be of proper length:
+
+>>> parseOnly timeOfDayInISO8601 "1:00:00"
+Left "timeOfDayInISO8601 > hour: Failed reading: Invalid decimal length"
+
+>>> parseOnly timeOfDayInISO8601 "01:1:00"
+Left "timeOfDayInISO8601 > minute: Failed reading: Invalid decimal length"
 -}
 {-# INLINE timeOfDayInISO8601 #-}
 timeOfDayInISO8601 :: Parser TimeOfDay
@@ -86,13 +118,26 @@ timeOfDayInISO8601 =
   where
     unnamedParser =
       A.timeOfDay <$>
-      (validated B.hour (decimalOfLength 2) <* char ':') <*>
-      (validated B.minute (decimalOfLength 2) <* char ':') <*>
-      (validated B.second (picoWithBasisOfLength 2))
+      (hour <* char ':') <*>
+      (minute <* char ':') <*>
+      (second)
 
 {-|
 >>> parseOnly dayInISO8601 "2017-02-01"
 Right 2017-02-01
+
+Checks the elements to be in proper range:
+
+>>> parseOnly dayInISO8601 "2017-13-01"
+Left "dayInISO8601: Failed reading: Invalid combination of year month and day: (2017,13,1)"
+
+That is accounting for leap year:
+
+>>> parseOnly dayInISO8601 "2017-02-29"
+Left "dayInISO8601: Failed reading: Invalid combination of year month and day: (2017,2,29)"
+
+>>> parseOnly dayInISO8601 "2016-02-29"
+Right 2016-02-29
 -}
 {-# INLINE dayInISO8601 #-}
 dayInISO8601 :: Parser Day
