@@ -1,7 +1,7 @@
 name:
   attoparsec-time
 version:
-  0.1.1
+  0.1.1.1
 synopsis:
   Attoparsec parsers of time
 description:
@@ -9,9 +9,9 @@ description:
 category:
   Attoparsec, Parsers, Time
 homepage:
-  https://github.com/sannsyn/attoparsec-time 
+  https://github.com/nikita-volkov/attoparsec-time 
 bug-reports:
-  https://github.com/sannsyn/attoparsec-time/issues 
+  https://github.com/nikita-volkov/attoparsec-time/issues 
 author:
   Nikita Volkov <nikita.y.volkov@mail.ru>
 maintainer:
@@ -31,7 +31,7 @@ source-repository head
   type:
     git
   location:
-    git://github.com/sannsyn/attoparsec-time.git
+    git://github.com/nikita-volkov/attoparsec-time.git
 
 library
   hs-source-dirs:
