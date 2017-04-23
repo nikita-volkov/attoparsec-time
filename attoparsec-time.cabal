@@ -1,7 +1,7 @@
 name:
   attoparsec-time
 version:
-  0.1.2
+  0.1.2.1
 synopsis:
   Attoparsec parsers of time
 description:

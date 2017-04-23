@@ -259,46 +259,46 @@ diffTime =
 {-|
 No suffix implies the "seconds" unit:
 
->>> parseOnly diffTime "10"
+>>> parseOnly nominalDiffTime "10"
 Right 10s
 
 Various units (seconds, minutes, hours, days):
 
->>> parseOnly diffTime "10s"
+>>> parseOnly nominalDiffTime "10s"
 Right 10s
 
->>> parseOnly diffTime "10m"
+>>> parseOnly nominalDiffTime "10m"
 Right 600s
 
->>> parseOnly diffTime "10h"
+>>> parseOnly nominalDiffTime "10h"
 Right 36000s
 
->>> parseOnly diffTime "10d"
+>>> parseOnly nominalDiffTime "10d"
 Right 864000s
 
 Metric prefixes to seconds (down to Pico):
 
->>> parseOnly diffTime "10ms"
+>>> parseOnly nominalDiffTime "10ms"
 Right 0.01s
 
->>> parseOnly diffTime "10μs"
+>>> parseOnly nominalDiffTime "10μs"
 Right 0.00001s
 
->>> parseOnly diffTime "10ns"
+>>> parseOnly nominalDiffTime "10ns"
 Right 0.00000001s
 
->>> parseOnly diffTime "10ps"
+>>> parseOnly nominalDiffTime "10ps"
 Right 0.00000000001s
 
 Negative values:
 
->>> parseOnly diffTime "-1s"
+>>> parseOnly nominalDiffTime "-1s"
 Right -1s
 
 Unsupported units:
 
->>> parseOnly diffTime "1k"
-Left "diffTime: Failed reading: Unsupported unit: \"k\""
+>>> parseOnly nominalDiffTime "1k"
+Left "nominalDiffTime: Failed reading: Unsupported unit: \"k\""
 -}
 nominalDiffTime :: Parser NominalDiffTime
 nominalDiffTime =
