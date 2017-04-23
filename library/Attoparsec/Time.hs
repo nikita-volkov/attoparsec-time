@@ -230,6 +230,9 @@ Right 0.01s
 >>> parseOnly diffTime "10μs"
 Right 0.00001s
 
+>>> parseOnly nominalDiffTime "10us"
+Right 0.00001s
+
 >>> parseOnly diffTime "10ns"
 Right 0.00000001s
 
@@ -284,6 +287,9 @@ Right 0.01s
 >>> parseOnly nominalDiffTime "10μs"
 Right 0.00001s
 
+>>> parseOnly nominalDiffTime "10us"
+Right 0.00001s
+
 >>> parseOnly nominalDiffTime "10ns"
 Right 0.00000001s
 
@@ -317,6 +323,7 @@ timeUnitFactor =
     "s" -> return id
     "ms" -> return (/ 1000)
     "μs" -> return (/ 1000000)
+    "us" -> return (/ 1000000)
     "ns" -> return (/ 1000000000)
     "ps" -> return (/ 1000000000000)
     "m" -> return (* 60)
