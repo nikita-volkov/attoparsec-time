@@ -4,6 +4,8 @@ module Attoparsec.Time
   dayInISO8601,
   timeZoneInISO8601,
   utcTimeInISO8601,
+  diffTime,
+  nominalDiffTime,
 )
 where
 
@@ -199,3 +201,125 @@ utcTimeInISO8601 =
         time <- timeOfDayInISO8601
         zone <- timeZoneInISO8601
         return (A.utcTimeFromDayAndTimeOfDay day time zone)
+
+{-|
+No suffix implies the "seconds" unit:
+
+>>> parseOnly diffTime "10"
+Right 10s
+
+Various units (seconds, minutes, hours, days):
+
+>>> parseOnly diffTime "10s"
+Right 10s
+
+>>> parseOnly diffTime "10m"
+Right 600s
+
+>>> parseOnly diffTime "10h"
+Right 36000s
+
+>>> parseOnly diffTime "10d"
+Right 864000s
+
+Metric prefixes to seconds (down to Pico):
+
+>>> parseOnly diffTime "10ms"
+Right 0.01s
+
+>>> parseOnly diffTime "10μs"
+Right 0.00001s
+
+>>> parseOnly diffTime "10ns"
+Right 0.00000001s
+
+>>> parseOnly diffTime "10ps"
+Right 0.00000000001s
+
+Negative values:
+
+>>> parseOnly diffTime "-1s"
+Right -1s
+
+Unsupported units:
+
+>>> parseOnly diffTime "1k"
+Left "diffTime: Failed reading: Unsupported unit: \"k\""
+-}
+diffTime :: Parser DiffTime
+diffTime =
+  unnamedParser <?> "diffTime"
+  where
+    unnamedParser =
+      do
+        amount <- scientific
+        factor <- timeUnitFactor
+        return (factor (realToFrac amount))
+
+{-|
+No suffix implies the "seconds" unit:
+
+>>> parseOnly diffTime "10"
+Right 10s
+
+Various units (seconds, minutes, hours, days):
+
+>>> parseOnly diffTime "10s"
+Right 10s
+
+>>> parseOnly diffTime "10m"
+Right 600s
+
+>>> parseOnly diffTime "10h"
+Right 36000s
+
+>>> parseOnly diffTime "10d"
+Right 864000s
+
+Metric prefixes to seconds (down to Pico):
+
+>>> parseOnly diffTime "10ms"
+Right 0.01s
+
+>>> parseOnly diffTime "10μs"
+Right 0.00001s
+
+>>> parseOnly diffTime "10ns"
+Right 0.00000001s
+
+>>> parseOnly diffTime "10ps"
+Right 0.00000000001s
+
+Negative values:
+
+>>> parseOnly diffTime "-1s"
+Right -1s
+
+Unsupported units:
+
+>>> parseOnly diffTime "1k"
+Left "diffTime: Failed reading: Unsupported unit: \"k\""
+-}
+nominalDiffTime :: Parser NominalDiffTime
+nominalDiffTime =
+  unnamedParser <?> "nominalDiffTime"
+  where
+    unnamedParser =
+      do
+        amount <- scientific
+        factor <- timeUnitFactor
+        return (factor (realToFrac amount))
+
+timeUnitFactor :: Fractional a => Parser (a -> a)
+timeUnitFactor =
+  takeWhile isAlpha >>= \case
+    "" -> return id
+    "s" -> return id
+    "ms" -> return (/ 1000)
+    "μs" -> return (/ 1000000)
+    "ns" -> return (/ 1000000000)
+    "ps" -> return (/ 1000000000000)
+    "m" -> return (* 60)
+    "h" -> return (* 3600)
+    "d" -> return (* 86400)
+    unit -> fail ("Unsupported unit: " <> show unit)
