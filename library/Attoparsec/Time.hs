@@ -230,7 +230,7 @@ Right 0.01s
 >>> parseOnly diffTime "10μs"
 Right 0.00001s
 
->>> parseOnly nominalDiffTime "10us"
+>>> parseOnly diffTime "10us"
 Right 0.00001s
 
 >>> parseOnly diffTime "10ns"
