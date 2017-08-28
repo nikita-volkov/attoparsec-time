@@ -1,42 +1,33 @@
--- The code is mostly ripped from
--- https://github.com/ekmett/lens/blob/697582fb9a980f273dbf8496253c5bbefedd0a8b/Setup.lhs
-import Data.List ( nub )
-import Data.Version ( showVersion )
-import Distribution.Package ( PackageName(PackageName), Package, PackageId, InstalledPackageId, packageVersion, packageName )
-import Distribution.PackageDescription ( PackageDescription(), TestSuite(..) )
-import Distribution.Simple ( defaultMainWithHooks, UserHooks(..), simpleUserHooks )
-import Distribution.Simple.Utils ( rewriteFile, createDirectoryIfMissingVerbose, copyFiles )
-import Distribution.Simple.BuildPaths ( autogenModulesDir )
-import Distribution.Simple.Setup ( BuildFlags(buildVerbosity), Flag(..), fromFlag, HaddockFlags(haddockDistPref))
-import Distribution.Simple.LocalBuildInfo ( withLibLBI, withTestLBI, LocalBuildInfo(), ComponentLocalBuildInfo(componentPackageDeps) )
-import Distribution.Text ( display )
-import Distribution.Verbosity ( Verbosity, normal )
-import System.FilePath ( (</>) )
+{-# LANGUAGE CPP #-}
+{-# OPTIONS_GHC -Wall #-}
+module Main (main) where
+
+#ifndef MIN_VERSION_cabal_doctest
+#define MIN_VERSION_cabal_doctest(x,y,z) 0
+#endif
+
+#if MIN_VERSION_cabal_doctest(1,0,0)
+
+import Distribution.Extra.Doctest ( defaultMainWithDoctests )
+main :: IO ()
+main = defaultMainWithDoctests "doctests"
+
+#else
+
+#ifdef MIN_VERSION_Cabal
+-- If the macro is defined, we have new cabal-install,
+-- but for some reason we don't have cabal-doctest in package-db
+--
+-- Probably we are running cabal sdist, when otherwise using new-build
+-- workflow
+#warning You are configuring this package without cabal-doctest installed. \
+         The doctests test-suite will not work as a result. \
+         To fix this, install cabal-doctest before configuring.
+#endif
+
+import Distribution.Simple
 
 main :: IO ()
-main = defaultMainWithHooks simpleUserHooks
-  { buildHook = \pkg lbi hooks flags -> do
-     generateBuildModule (fromFlag (buildVerbosity flags)) pkg lbi
-     buildHook simpleUserHooks pkg lbi hooks flags
-  }
+main = defaultMain
 
-generateBuildModule :: Verbosity -> PackageDescription -> LocalBuildInfo -> IO ()
-generateBuildModule verbosity pkg lbi = do
-  let dir = autogenModulesDir lbi
-  createDirectoryIfMissingVerbose verbosity True dir
-  withLibLBI pkg lbi $ \_ libcfg -> do
-    withTestLBI pkg lbi $ \suite suitecfg -> do
-      rewriteFile (dir </> "Build_" ++ testName suite ++ ".hs") $ unlines
-        [ "module Build_" ++ testName suite ++ " where"
-        , "import Prelude"
-        , "deps :: [String]"
-        , "deps = " ++ (show $ formatdeps (testDeps libcfg suitecfg))
-        ]
-  where
-    formatdeps = map (formatone . snd)
-    formatone p = case packageName p of
-      PackageName n -> n ++ "-" ++ showVersion (packageVersion p)
-
-testDeps :: ComponentLocalBuildInfo -> ComponentLocalBuildInfo -> [(InstalledPackageId, PackageId)]
-testDeps xs ys = nub $ componentPackageDeps xs ++ componentPackageDeps ys
-
+#endif
