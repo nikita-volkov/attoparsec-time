@@ -1,4 +1,4 @@
-module Attoparsec.Time.Validators where
+module Attoparsec.Time.Validation where
 
 import Attoparsec.Time.Prelude
 

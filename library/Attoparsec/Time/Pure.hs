@@ -1,8 +1,7 @@
--- |
--- Efficient construction functions for values of the \"time\" library.
-module Attoparsec.Time.Constructors where
+module Attoparsec.Time.Pure where
 
 import Attoparsec.Time.Prelude
+import qualified Data.ByteString as A
 
 
 {-# INLINE timeZone #-}
@@ -36,3 +35,21 @@ utcTimeFromDayAndTimeOfDay day tod tz =
 utcTimeFromComponents :: Int -> Int -> Int -> Int -> Int -> Int -> Int -> TimeZone -> UTCTime
 utcTimeFromComponents year month day hour minute second millisecond timeZone =
   undefined
+
+{-# INLINE decimalFromBytes #-}
+decimalFromBytes :: Integral decimal => A.ByteString -> decimal
+decimalFromBytes =
+  A.foldl' step 0
+  where
+    step a b =
+      a * 10 + fromIntegral b - 48
+
+{-# INLINE word8IsAsciiDigit #-}
+word8IsAsciiDigit :: Word8 -> Bool
+word8IsAsciiDigit w =
+  w - 48 <= 9
+
+{-# INLINE word8IsAsciiAlpha #-}
+word8IsAsciiAlpha :: Word8 -> Bool
+word8IsAsciiAlpha x =
+  (x - 97 <= 25) || (x - 65 <= 25) 

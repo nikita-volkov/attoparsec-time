@@ -1,4 +1,4 @@
-module Attoparsec.Time
+module Attoparsec.Time.Text
 (
   timeOfDayInISO8601,
   dayInISO8601,
@@ -11,8 +11,8 @@ where
 
 import Attoparsec.Time.Prelude hiding (take, takeWhile)
 import Data.Attoparsec.Text
-import qualified Attoparsec.Time.Constructors as A
-import qualified Attoparsec.Time.Validators as B
+import qualified Attoparsec.Time.Pure as A
+import qualified Attoparsec.Time.Validation as B
 import qualified Data.Text as C
 
 
