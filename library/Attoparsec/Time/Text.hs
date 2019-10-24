@@ -2,6 +2,7 @@ module Attoparsec.Time.Text
 (
   timeOfDayInISO8601,
   dayInISO8601,
+  yearAndMonthInISO8601,
   timeZoneInISO8601,
   utcTimeInISO8601,
   diffTime,
@@ -160,6 +161,21 @@ dayInISO8601 =
         error year month day =
           showString "Invalid combination of year month and day: " $ 
           show (year, month, day)
+
+{-|
+>>> parseOnly yearAndMonthInISO8601 "2016-02"
+Right (2016,2)
+-}
+yearAndMonthInISO8601 :: Parser (Word, Word)
+yearAndMonthInISO8601 =
+  unnamedParser <?> "yearAndMonthInISO8601"
+  where
+    unnamedParser =
+      do
+        year <- decimalOfLength 4
+        char '-'
+        month <- decimalOfLength 2
+        return (year, month)
 
 {-|
 >>> parseOnly timeZoneInISO8601 "+01:00"
