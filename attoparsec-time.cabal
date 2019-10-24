@@ -1,5 +1,5 @@
 name: attoparsec-time
-version: 1
+version: 1.0.1
 synopsis: Attoparsec parsers of time
 description: A collection of Attoparsec parsers for the \"time\" library
 category: Attoparsec, Parsers, Time
