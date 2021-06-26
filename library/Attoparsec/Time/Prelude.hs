@@ -76,10 +76,6 @@ import Unsafe.Coerce as Exports
 -------------------------
 import Data.Text as Exports (Text)
 
--- scientific
--------------------------
-import Data.Scientific as Exports (Scientific)
-
 -- time
 -------------------------
 import Data.Time as Exports
