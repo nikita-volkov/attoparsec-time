@@ -7,6 +7,10 @@ module Attoparsec.Time.Text
   utcTimeInISO8601,
   diffTime,
   nominalDiffTime,
+  -- *
+  hour,
+  minute,
+  second,
 )
 where
 

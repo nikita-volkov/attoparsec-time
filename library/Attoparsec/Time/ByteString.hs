@@ -10,6 +10,10 @@ module Attoparsec.Time.ByteString
   utcTimeInISO8601,
   diffTime,
   nominalDiffTime,
+  -- *
+  hour,
+  minute,
+  second,
 )
 where
 
