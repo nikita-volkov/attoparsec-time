@@ -1,10 +1,12 @@
 module Attoparsec.Time.Text
 (
   timeOfDayInISO8601,
+  timeOfDayInDashes,
   dayInISO8601,
   yearAndMonthInISO8601,
   timeZoneInISO8601,
   utcTimeInISO8601,
+  utcTimeInDashes,
   diffTime,
   nominalDiffTime,
   -- *
@@ -129,6 +131,17 @@ timeOfDayInISO8601 =
       (minute <* char ':') <*>
       (second)
 
+{-# INLINE timeOfDayInDashes #-}
+timeOfDayInDashes :: Parser TimeOfDay
+timeOfDayInDashes =
+  unnamedParser <?> "timeOfDayInDashes"
+  where
+    unnamedParser =
+      A.timeOfDay <$>
+      (hour <* char '-') <*>
+      (minute <* char '-') <*>
+      (second)
+
 {-|
 >>> parseOnly dayInISO8601 "2017-02-01"
 Right 2017-02-01
@@ -221,6 +234,21 @@ utcTimeInISO8601 =
         time <- timeOfDayInISO8601
         zone <- timeZoneInISO8601
         return (A.utcTimeFromDayAndTimeOfDay day time zone)
+
+{-|
+>>> parseOnly utcTimeInDashes "2017-02-01-05-03-58"
+Right 2017-02-01 05:03:58 UTC
+-}
+utcTimeInDashes :: Parser UTCTime
+utcTimeInDashes =
+  unnamedParser <?> "utcTimeInDashes"
+  where
+    unnamedParser =
+      do
+        day <- dayInISO8601
+        char '-'
+        time <- timeOfDayInDashes
+        return (localTimeToUTC utc (LocalTime day time))
 
 {-|
 No suffix implies the "seconds" unit:
