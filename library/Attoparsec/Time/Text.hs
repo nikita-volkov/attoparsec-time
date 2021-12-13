@@ -70,7 +70,7 @@ picoWithBasisOfLength basisLength =
     beforePoint =
       replicateM basisLength decimalChar
     afterPoint =
-      padListFromRight 0 [] resolution <$> ((char '.' *> many decimalChar) <|> pure [])
+      padListFromRight 0 [] resolution <$> ((char '.' *> many1 decimalChar) <|> pure [])
       where
         padListFromRight padding accumulator length list =
           case length of
