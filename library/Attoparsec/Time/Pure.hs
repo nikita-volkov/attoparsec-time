@@ -3,13 +3,14 @@ module Attoparsec.Time.Pure where
 import Attoparsec.Time.Prelude
 import qualified Data.ByteString as A
 
-
 {-# INLINE timeZone #-}
 timeZone :: Bool -> Int -> Int -> TimeZone
 timeZone positive hour minute =
-  minutesToTimeZone $
-  bool negate id positive $
-  hour * 60 + minute
+  minutesToTimeZone
+    $ bool negate id positive
+    $ hour
+    * 60
+    + minute
 
 {-# INLINE day #-}
 day :: Int -> Int -> Int -> Day
@@ -37,7 +38,7 @@ utcTimeFromComponents year month day hour minute second millisecond timeZone =
   undefined
 
 {-# INLINE decimalFromBytes #-}
-decimalFromBytes :: Integral decimal => A.ByteString -> decimal
+decimalFromBytes :: (Integral decimal) => A.ByteString -> decimal
 decimalFromBytes =
   A.foldl' step 0
   where
@@ -52,4 +53,4 @@ word8IsAsciiDigit w =
 {-# INLINE word8IsAsciiAlpha #-}
 word8IsAsciiAlpha :: Word8 -> Bool
 word8IsAsciiAlpha x =
-  (x - 97 <= 25) || (x - 65 <= 25) 
+  (x - 97 <= 25) || (x - 65 <= 25)

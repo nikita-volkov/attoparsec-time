@@ -2,21 +2,19 @@ module Attoparsec.Time.Validation where
 
 import Attoparsec.Time.Prelude
 
+data Validator a
+  = Validator String (a -> Bool)
 
-data Validator a =
-  Validator String (a -> Bool)
-
-run :: Show a => Validator a -> b -> (String -> b) -> a -> b
+run :: (Show a) => Validator a -> b -> (String -> b) -> a -> b
 run (Validator name predicate) onNoError onError input =
   if predicate input
-    then
-      onNoError
+    then onNoError
     else
-      onError $
-      showString "Validator " $
-      shows name $
-      showString " failed on the following input: " $
-      show input
+      onError
+        $ showString "Validator "
+        $ shows name
+        $ showString " failed on the following input: "
+        $ show input
 
 month :: (Num a, Ord a) => Validator a
 month =
