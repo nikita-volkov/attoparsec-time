@@ -1,6 +1,6 @@
 cabal-version: 3.0
 name:          attoparsec-time
-version:       1.0.3
+version:       1.0.3.1
 synopsis:      Attoparsec parsers of time
 description:   A collection of Attoparsec parsers for the \"time\" library
 category:      Attoparsec, Parsers, Time
